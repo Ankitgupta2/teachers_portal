@@ -23,3 +23,8 @@ Things you may want to cover:
 
 * ...
 # teachers_portal
+1. run bundle install to install gem dependencies
+2. db:create
+3. db:migrate
+4. rails server to run server
+5. localhost:3000
