@@ -1,0 +1,326 @@
+<style>
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+}
+
+.page-title {
+    margin: 0;
+    font-size: 24px;
+    color: #D22B2B	;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    margin-left: -25px;
+    font-size: 16px;
+}
+
+.nav-links a:hover {
+    text-decoration: underline;
+}
+.nav-links button {
+    color: white;    
+    text-decoration: none;
+    margin-left: 20px;
+    font-size: 16px; 
+}
+.logout-button {
+    background-color: transparent;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    text-decoration: none; 
+}
+
+.logout-button:hover {
+    text-decoration: none;
+}
+.nav-links {
+    display: flex;
+    align-items: center; 
+}
+
+.nav-links a {
+    color: white;            
+    text-decoration: none; 
+    margin-left: -25px;    
+    padding-top: 3px; 
+    font-size: 16px;
+}
+.link_new{
+  border: none;
+  text-decoration: none; 
+  font-size: 15px;
+}
+
+</style>
+
+<div class="header">
+    <h1 class="page-title">Tailwebs</h1>
+    <nav class="nav-links">
+        <a href="/">Home</a>
+        <%= button_to "Logout", destroy_user_session_path, method: :delete, data: { confirm: "Are you sure you want to log out?" }, class: "logout-button" %>
+    </nav>
+</div>
+
+<table class="student-table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Subject</th>
+      <th>Marks</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @students.each do |student| %>
+      <tr>
+        <td><%= student.name %></td>
+        <td><%= student.subject %></td>
+        <td><%= student.marks %></td>
+        <td>
+          <div class="dropdown">
+            <button class="dropbtn">▼</button>
+            <div class="dropdown-content">
+              <%= link_to 'Edit', edit_student_path(student), class: 'dropdown-item' %>
+              <%= button_to 'Delete', student_path(student), method: :delete, data: { confirm: 'Are you sure?' }, class: 'dropdown-item link_new' %>
+
+            </div>
+          </div>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<button class="btn add-student-btn" onclick="openModal()">Add</button>
+
+<!-- Modal for Adding New Student -->
+<div id="addStudentModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+
+    <%= form_with(model: @student, local: true) do |form| %>
+      <% if @student.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(@student.errors.count, "error") %> prohibited this student from being saved:</h2>
+          <ul>
+            <% @student.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="form-group">
+        <%= form.label :name, class: 'form-label' %> 
+        <%= form.text_field :name, class: 'form-input', required: true %> 
+      </div>
+
+      <div class="form-group">
+        <%= form.label :subject, class: 'form-label' %> 
+        <%= form.text_field :subject, class: 'form-input', required: true %> 
+      </div>
+
+      <div class="form-group">
+        <%= form.label :marks, class: 'form-label' %> 
+        <%= form.number_field :marks, class: 'form-input', required: true %> 
+      </div>
+
+      <div class="actions">
+        <%= form.submit "Add", class: "submit-btn" %> 
+      </div>
+
+    <% end %>
+
+  </div>
+</div>
+
+<script>
+// Close the dropdown if the user clicks outside of it
+window.onclick = function(event) {
+  if (!event.target.matches('.dropbtn')) {
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    for (var i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.style.display === "block") {
+        openDropdown.style.display = "none";
+      }
+    }
+  }
+};
+
+function toggleDropdown(event) {
+  event.stopPropagation(); // Prevent the click from closing the dropdown immediately
+  var dropdownContent = event.target.nextElementSibling;
+  dropdownContent.style.display = dropdownContent.style.display === "block" ? "none" : "block";
+}
+
+// Modal functionality
+function openModal() {
+  document.getElementById("addStudentModal").style.display = "block";
+}
+
+function closeModal() {
+  document.getElementById("addStudentModal").style.display = "none";
+}
+
+// Close modal on clicking outside of it
+window.onclick = function(event) {
+  const modal = document.getElementById("addStudentModal");
+  if (event.target === modal) {
+    closeModal();
+  }
+};
+
+</script>
+
+<style>
+/* Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* Centered */
+    padding: 20px;
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0px 2px 10px rgba(0,0,0,0.5); /* Shadow effect */
+}
+
+/* Close Button Styles */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 15px; 
+}
+
+.form-label {
+    display: block; 
+    margin-bottom: 5px; 
+}
+
+.form-input {
+    width: calc(100% - 20px); 
+    padding: 10px; 
+    border-radius: 4px; 
+    border: 1px solid #ccc; 
+}
+
+.form-input:focus {
+   border-color: #007bff; 
+   outline: none; 
+   box-shadow: 0 0 5px rgba(0,123,255,.5); 
+}
+
+/* Button Styles */
+.submit-btn {
+   background-color: #28a745; 
+   color: white;
+   padding: 10px;
+   border-radius: 5px;
+   border: none;
+   cursor: pointer;
+   width: 100%; 
+}
+
+.submit-btn:hover {
+   background-color: #218838; 
+}
+
+/* Dropdown Container */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropbtn - Initially hidden */
+.dropbtn {
+  background-color: #f9f9f9;
+  border: none;
+  cursor: pointer;
+}
+
+/* Show dropbtn when hovering over dropdown */
+.dropdown:hover .dropbtn {
+  display: inline-block;
+}
+
+/* Dropdown Content */
+.dropdown-content {
+  display: hidden;
+  position: absolute;
+  background-color: #f1f1f1;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Show dropdown content on hover */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* Dropdown Item */
+.dropdown-item {
+  padding: 10px;
+  text-decoration: none;
+  display: block;
+  color: black;
+}
+
+.dropdown-item:hover {
+  background-color: #ddd;
+}
+
+.dropbtn:hover{
+  color: white;
+  background-color: black;  
+
+}
+
+
+.dropbtn {
+    background-color: #f4f4f4;  
+    color: #f4f4f4;
+    border: none;
+    cursor: pointer;
+    padding: 8px;             
+    width: 30px;            
+    height: 30px;
+    border-radius: 50%;        
+    font-size: 13px; 
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+</style>
